@@ -1,0 +1,72 @@
+/* Inter font loaded via index.html <link> for best performance */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 8%; /* #141414 */
+    --foreground: 0 0% 100%; /* #FFFFFF */
+    
+    --card: 0 0% 10%; /* #1a1a1a */
+    --card-foreground: 0 0% 100%;
+    
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 8%;
+    
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    
+    --accent: 210 100% 50%; /* Electric blue accent */
+    --accent-foreground: 0 0% 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+    font-size: 22px; /* Set base font size to 22px as requested */
+    line-height: 1.5;
+  }
+
+  /* Override tailwind default sizes to respect the 22px base roughly */
+  h1 { font-size: 1.75em; font-weight: 700; }
+  h2 { font-size: 1.4em; font-weight: 600; }
+  h3 { font-size: 1.2em; font-weight: 600; }
+  p, span, div, button { font-size: 1em; }
+  
+  /* Utilities for smaller text */
+  .text-sm { font-size: 0.8em; }
+  .text-xs { font-size: 0.65em; }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-card/80 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-white/5;
+  }
+}
+
+/* Custom Scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #141414; 
+}
+::-webkit-scrollbar-thumb {
+  background: #333; 
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}

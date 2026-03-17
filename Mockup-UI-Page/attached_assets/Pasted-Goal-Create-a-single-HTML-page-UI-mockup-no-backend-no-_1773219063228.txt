@@ -1,0 +1,96 @@
+Goal: Create a single HTML page UI mockup (no backend, no file handling) that follows the specs below. Use one index.html with embedded CSS and a tiny JS snippet. Keep it clean and minimal—no frameworks or build tools. This is a visual prototype only.
+Page & Theme (from wireframe)
+
+Full page background: black #141414. All text white #FFFFFF with Inter Regular as the font; base size 22px. [SaleNXT_Frontend | PowerPoint]
+A centered portrait-style form container that occupies ~70% of the screen width (like Google Forms).
+Important: The background behind the form (not the form itself) appears as a gray-ish panel #A1A1A1—treat this as a subtle backdrop/column behind the main container. [SaleNXT_Frontend | PowerPoint]
+
+Header & Footer (inside the form container)
+
+Header (left): slot for KONE white logo (I’ll replace later). Place at the top-left inside the form container, not the page edge.
+Header (right): Profile icon; Logout button directly below it. [SaleNXT_Frontend | PowerPoint]
+Footer: Left: “© 2026 KONE Corporation. All rights reserved.” Right: Help hyperlink → https://www.kone.com/en/. [SaleNXT_Frontend | PowerPoint]
+
+Single‑Screen Progressive Flow (accordion reveal)
+
+Keep all sections on one page. Each section is an accordion/card that starts collapsed (except the first).
+Continue button at the end of each section expands the next section and smooth‑scrolls to it; the previous ones remain visible above (read‑only).
+Optional Back text link re‑expands the previous section for edits.
+
+Sections (match PPT content but adapted to single screen)
+
+
+Upload
+
+Title: “Upload picture/video”
+Helper text: Accepted: .jpg, .jpeg, .png, .mpeg. [SaleNXT_Frontend | PowerPoint]
+Guidance text (verbatim):
+“Open your camera and shoot as a Hi‑res picture with aspect ratio of 4:3 or shoot as a HDR video with aspect ratio of 4:3”. [SaleNXT_Frontend | PowerPoint]
+Controls (mock only): Browse (disabled or uses a placeholder), Continue → reveals Section 2.
+
+
+
+Use Case & Components (fixed branching → multi‑select)
+
+Use case selection uses multi‑select chips: Car, Lobby (user may pick one or both). [SaleNXT_Frontend | PowerPoint]
+Components auto‑populate as multi‑select chips depending on chosen use cases:
+
+If Car selected → COP, Ceiling.
+If Lobby selected → LCI, Door.
+If both use cases selected → show the union of all four components so users can pick any mix (e.g., both COP and Roof/Ceiling). [SaleNXT_Frontend | PowerPoint]
+
+
+Continue → reveals Section 3.
+
+
+
+Preview (Image) with Reliable Pin Placement
+
+Show a placeholder Preview Image area.
+Instruction (verbatim):
+“If you want to adjust the placement of the component, tap the correct placement within the ‘Preview image’ and click the ‘Generate’ again button”. [SaleNXT_Frontend | PowerPoint]
+Fix for tapping accuracy (mocked):
+
+Use a full‑bleed transparent overlay over the preview to capture clicks.
+On click/tap, place a large, high‑contrast pin at the coordinates; also show numeric X/Y in helper text.
+Add Zoom In/Out buttons (visual only), and a “Confirm placement” button to lock the pin state (purely visual).
+Provide keyboard support (arrow keys nudge pin by a few px in the mockup).
+
+
+Buttons: Generate again (does nothing except pulse the pin), Continue → reveals Section 4. [SaleNXT_Frontend | PowerPoint]
+
+
+
+Preview with Callout
+
+Show the image with callout placeholder.
+Buttons: Generate again (mock), Continue → reveals Section 5. [SaleNXT_Frontend | PowerPoint]
+
+
+
+Video Options (still a mock)
+
+Video preview placeholder.
+Options: Video 1, Video 2, Video 3 (card or radio), Speed: 0.5×, 1×, 1.5×; Quality: 360p, 480p, 720p, 1080p.
+Continue → reveals Section 6. [SaleNXT_Frontend | PowerPoint]
+
+
+
+Render & Download (visual only)
+
+Three large tiles: Rendered Image, Rendered Image with Callouts, Video.
+Each tile has a Download button that is non‑functional (mock).
+Keep the footer visible. [SaleNXT_Frontend | PowerPoint]
+
+
+
+Micro‑interactions (still mock)
+
+Smooth scroll (scrollIntoView) on Continue; chevron caret rotates when a section expands.
+Focus styles on all interactive elements for accessibility.
+
+Acceptance (what to output)
+
+A single index.html with inline CSS and tiny JS that produces the above visual flow.
+Use faithful copy, colors, placements, and the logo inside the form container (top‑left).
+No external libs, no real uploads, no actual rendering—just a believable, navigable mockup
