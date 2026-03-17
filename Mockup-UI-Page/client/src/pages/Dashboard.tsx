@@ -9,6 +9,8 @@ import {
   Layers,
   Calendar,
   BookOpen,
+  FileEdit,
+  BookMarked,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -181,8 +183,21 @@ export default function Dashboard({ projects, onCreateProject, onOpenProject, on
                   <BookOpen className="w-5 h-5 text-[#1450f5]" />
                 </div>
 
-                {/* Name */}
-                <p className="text-white font-semibold text-[1em] mb-1 truncate">{project.name}</p>
+                {/* Name + Status */}
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <p className="text-white font-semibold text-[1em] truncate">{project.name}</p>
+                  {project.offerings.length > 0 ? (
+                    <span className="flex items-center gap-1 shrink-0 text-[0.68em] px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full font-medium">
+                      <BookMarked className="w-3 h-3" />
+                      Brochure ready
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1 shrink-0 text-[0.68em] px-2.5 py-1 bg-white/5 border border-white/15 text-white/40 rounded-full font-medium">
+                      <FileEdit className="w-3 h-3" />
+                      Draft
+                    </span>
+                  )}
+                </div>
 
                 {/* Meta */}
                 <div className="flex items-center gap-3 text-[0.78em] text-white/35 mb-4">
