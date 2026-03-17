@@ -36,4 +36,4 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "cd Mockup-UI-Page && npm run start"]
-build = ["bash", "-c", "cd Mockup-UI-Page && npm install && npm run build"]
+build = ["bash", "-c", "cd Mockup-UI-Page && npm run build"]

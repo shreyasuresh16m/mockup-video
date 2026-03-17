@@ -1,0 +1,9 @@
+{
+  "name": "salesnxt",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "cd Mockup-UI-Page && npm install",
+    "build": "cd Mockup-UI-Page && npm run build",
+    "start": "cd Mockup-UI-Page && npm run start"
+  }
+}
