@@ -12,4 +12,4 @@ export type Project = {
   offerings: Offering[];
 };
 
-export type AppView = "login" | "dashboard" | "workflow" | "brochure";
+export type AppView = "login" | "dashboard" | "project-detail" | "workflow" | "brochure";

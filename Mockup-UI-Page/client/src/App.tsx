@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
+import ProjectDetail from "@/pages/ProjectDetail";
 import Home from "@/pages/Home";
 import Brochure from "@/pages/Brochure";
 import type { Project, Offering, AppView } from "@/types";
@@ -13,12 +14,10 @@ function App() {
   const [view, setView] = useState<AppView>("login");
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [brochureOffering, setBrochureOffering] = useState<Offering | null>(null);
 
-  // Persist offerings per project — survives view switches
-  const [projectOfferings, setProjectOfferings] = useState<Record<string, Offering[]>>({});
-
-  // Offerings currently being used in the brochure builder
-  const [brochureOfferings, setBrochureOfferings] = useState<Offering[]>([]);
+  // Next offering ID counter per project
+  const [offeringCounters, setOfferingCounters] = useState<Record<string, number>>({});
 
   const handleLogin = () => setView("dashboard");
   const handleLogout = () => {
@@ -35,28 +34,50 @@ function App() {
     };
     setProjects((prev) => [project, ...prev]);
     setCurrentProject(project);
-    setView("workflow");
+    setView("project-detail");
   };
 
   const handleOpenProject = (project: Project) => {
     setCurrentProject(project);
+    setView("project-detail");
+  };
+
+  // Called from ProjectDetail when "New Offering" is clicked
+  const handleAddOffering = () => {
     setView("workflow");
   };
 
-  // Called by Home whenever offerings are saved/updated
-  const handleOfferingsChange = (offerings: Offering[]) => {
+  // Called from Home (workflow) when the user completes step 6
+  const handleCompleteOffering = (offeringData: { components: string[]; useCases: string[] }) => {
     if (!currentProject) return;
     const pid = currentProject.id;
-    setProjectOfferings((prev) => ({ ...prev, [pid]: offerings }));
-    // Also keep the project list in sync
+    const count = (offeringCounters[pid] ?? 0) + 1;
+    setOfferingCounters((prev) => ({ ...prev, [pid]: count }));
+
+    const newOffering: Offering = {
+      id: count,
+      label: `Offering ${count}`,
+      components: offeringData.components,
+      useCases: offeringData.useCases,
+    };
+
     setProjects((prev) =>
-      prev.map((p) => (p.id === pid ? { ...p, offerings } : p))
+      prev.map((p) => {
+        if (p.id !== pid) return p;
+        return { ...p, offerings: [...p.offerings, newOffering] };
+      })
     );
+    // Update currentProject reference
+    setCurrentProject((prev) => {
+      if (!prev) return prev;
+      return { ...prev, offerings: [...prev.offerings, newOffering] };
+    });
+    setView("project-detail");
   };
 
-  const handleBuildBrochure = (offerings: Offering[]) => {
-    handleOfferingsChange(offerings);
-    setBrochureOfferings(offerings);
+  // Called from ProjectDetail when "Build Brochure" is clicked on an offering
+  const handleBuildBrochure = (offering: Offering) => {
+    setBrochureOffering(offering);
     setView("brochure");
   };
 
@@ -65,8 +86,14 @@ function App() {
     setCurrentProject(null);
   };
 
-  // Current project's saved offerings (or empty if none yet)
-  const currentOfferings = currentProject ? (projectOfferings[currentProject.id] ?? []) : [];
+  const handleBackToProjectDetail = () => {
+    setView("project-detail");
+  };
+
+  // Get the live project data (with latest offerings)
+  const liveProject = currentProject
+    ? projects.find((p) => p.id === currentProject.id) ?? currentProject
+    : null;
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -83,21 +110,28 @@ function App() {
             onLogout={handleLogout}
           />
         )}
+        {view === "project-detail" && liveProject && (
+          <ProjectDetail
+            project={liveProject}
+            onAddOffering={handleAddOffering}
+            onBuildBrochure={handleBuildBrochure}
+            onBackToDashboard={handleBackToDashboard}
+            onLogout={handleLogout}
+          />
+        )}
         {view === "workflow" && currentProject && (
           <Home
             projectName={currentProject.name}
-            initialOfferings={currentOfferings}
             onLogout={handleLogout}
-            onOfferingsChange={handleOfferingsChange}
-            onBuildBrochure={handleBuildBrochure}
-            onBackToDashboard={handleBackToDashboard}
+            onComplete={handleCompleteOffering}
+            onBackToProject={handleBackToProjectDetail}
           />
         )}
-        {view === "brochure" && currentProject && (
+        {view === "brochure" && currentProject && brochureOffering && (
           <Brochure
-            offerings={brochureOfferings}
+            offering={brochureOffering}
             projectName={currentProject.name}
-            onBackToProject={() => setView("workflow")}
+            onBackToProject={handleBackToProjectDetail}
             onBackToDashboard={handleBackToDashboard}
             onLogout={handleLogout}
           />

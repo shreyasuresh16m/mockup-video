@@ -21,17 +21,15 @@ import {
   Circle,
   RotateCcw,
   LogOut,
-  BookmarkPlus,
-  ArrowRight,
   ChevronLeft as BackIcon,
   Sparkles,
   Wand2,
   Eye,
   EyeOff,
   ScanSearch,
+  PartyPopper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Offering } from "@/types";
 
 import copImg from "@assets/image_1773728556778.png";
 import lciImg from "@assets/image_1773728561376.png";
@@ -526,14 +524,12 @@ function autoPlaceAll(components: string[], seed: number = 0): PinMap {
 
 type HomeProps = {
   projectName: string;
-  initialOfferings: Offering[];
   onLogout: () => void;
-  onOfferingsChange: (offerings: Offering[]) => void;
-  onBuildBrochure: (offerings: Offering[]) => void;
-  onBackToDashboard: () => void;
+  onComplete: (data: { components: string[]; useCases: string[] }) => void;
+  onBackToProject: () => void;
 };
 
-export default function Home({ projectName, initialOfferings, onLogout, onOfferingsChange, onBuildBrochure, onBackToDashboard }: HomeProps) {
+export default function Home({ projectName, onLogout, onComplete, onBackToProject }: HomeProps) {
   const [activeStep, setActiveStep] = useState(1);
   const [highestStep, setHighestStep] = useState(1);
 
@@ -550,8 +546,6 @@ export default function Home({ projectName, initialOfferings, onLogout, onOfferi
   const [imageScale, setImageScale] = useState(1);
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [videoConfig, setVideoConfig] = useState({ option: "Zoom in", speed: "1×", quality: "1080p" });
-
-  const [savedOfferings, setSavedOfferings] = useState<Offering[]>(initialOfferings);
 
   const [aiSuggestedPins, setAiSuggestedPins] = useState<Set<string>>(new Set());
   const [regenSeed, setRegenSeed] = useState(0);
@@ -591,12 +585,8 @@ export default function Home({ projectName, initialOfferings, onLogout, onOfferi
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleSaveOffering = () => {
-    const id = savedOfferings.length + 1;
-    const newOffering: Offering = { id, label: `Offering ${id}`, components, useCases };
-    const updated = [...savedOfferings, newOffering];
-    setSavedOfferings(updated);
-    onOfferingsChange(updated);
+  const handleCompleteOffering = () => {
+    onComplete({ components, useCases });
   };
 
   const handleContinue = (nextStep: number) => {
@@ -685,11 +675,11 @@ export default function Home({ projectName, initialOfferings, onLogout, onOfferi
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-b border-white/10 px-6 py-3.5 flex justify-between items-center">
         <div className="flex items-center gap-3 min-w-0">
           <button
-            onClick={onBackToDashboard}
+            onClick={onBackToProject}
             className="flex items-center gap-1.5 text-white/40 hover:text-white/80 transition-colors text-[0.8em] py-1.5 px-2 rounded-lg hover:bg-white/5 flex-shrink-0"
           >
             <BackIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">Projects</span>
+            <span className="hidden sm:inline">Project</span>
           </button>
           <div className="h-5 w-px bg-white/15 flex-shrink-0" />
           <img
@@ -1406,94 +1396,34 @@ export default function Home({ projectName, initialOfferings, onLogout, onOfferi
                 </div>
               )}
 
-              {/* ── Save as Offering ── */}
-              <div className="border-t border-white/10 pt-6 space-y-4">
-                <div>
-                  <p className="text-white font-medium text-[0.95em]">Save this configuration as an Offering</p>
-                  <p className="text-white/40 text-[0.82em] mt-0.5">
-                    Saved offerings will be available when building your Sales Brochure.
-                  </p>
-                </div>
-
-                {savedOfferings.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {savedOfferings.map((o) => (
-                      <span key={o.id} className="flex items-center gap-1.5 text-[0.8em] px-3 py-1.5 bg-[#1450f5]/10 border border-[#1450f5]/30 text-[#7b9fff] rounded-full">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        {o.label} saved
-                      </span>
-                    ))}
+              {/* ── Complete Offering ── */}
+              <div className="border-t border-white/10 pt-6">
+                <div className="bg-gradient-to-br from-[#1450f5]/15 to-[#1450f5]/5 border border-[#1450f5]/30 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-5">
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-white font-semibold text-[1em] mb-1">Offering complete</p>
+                    <p className="text-white/45 text-[0.82em]">
+                      Save this offering to your project. You'll then be able to build a Sales Brochure from the project screen.
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
+                      {useCases.map((u) => (
+                        <span key={u} className="text-[0.72em] px-2.5 py-1 bg-white/8 border border-white/15 text-white/50 rounded-full">{u}</span>
+                      ))}
+                      {components.map((c) => (
+                        <span key={c} className="text-[0.72em] px-2.5 py-1 bg-[#00A3E0]/10 border border-[#00A3E0]/25 text-[#00A3E0] rounded-full">{c}</span>
+                      ))}
+                    </div>
                   </div>
-                )}
-
-                {(() => {
-                  const alreadySaved = savedOfferings.some(
-                    (o) => JSON.stringify(o.components) === JSON.stringify(components) &&
-                           JSON.stringify(o.useCases) === JSON.stringify(useCases)
-                  );
-                  return (
-                    <button
-                      onClick={handleSaveOffering}
-                      disabled={alreadySaved || components.length === 0}
-                      className={cn(
-                        "flex items-center gap-2.5 px-6 py-3 rounded-xl font-medium text-[0.9em] transition-all active:scale-95",
-                        alreadySaved || components.length === 0
-                          ? "bg-white/5 text-white/30 cursor-not-allowed border border-white/10"
-                          : "bg-[#1450f5] text-white hover:bg-[#1040d0] shadow-lg shadow-[#1450f5]/20"
-                      )}
-                    >
-                      <BookmarkPlus className="w-4 h-4" />
-                      {alreadySaved ? "Already saved" : "Save as Offering"}
-                    </button>
-                  );
-                })()}
-              </div>
-
-              {/* Reset / new offering */}
-              <div className="border-t border-white/10 pt-4 flex items-center justify-between">
-                <button
-                  onClick={resetWorkflow}
-                  className="flex items-center gap-2 text-[0.85em] text-white/40 hover:text-white/70 transition-colors py-2 px-4 rounded-lg hover:bg-white/5"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Start new configuration
-                </button>
+                  <button
+                    onClick={handleCompleteOffering}
+                    className="flex items-center gap-3 px-8 py-3.5 bg-[#1450f5] hover:bg-[#1040d0] text-white rounded-xl font-semibold text-[0.9em] transition-all active:scale-95 shadow-lg shadow-[#1450f5]/25 whitespace-nowrap flex-shrink-0"
+                  >
+                    <PartyPopper className="w-4 h-4" />
+                    Save & Return to Project
+                  </button>
+                </div>
               </div>
             </div>
           </StepContainer>
-
-          {/* ── Brochure CTA ── */}
-          {savedOfferings.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-gradient-to-br from-[#1450f5]/15 to-[#1450f5]/5 border border-[#1450f5]/30 rounded-2xl p-8 flex flex-col sm:flex-row items-center gap-6"
-            >
-              <div className="flex-1 text-center sm:text-left">
-                <p className="text-white font-semibold text-[1.1em] mb-1">
-                  Ready to build your Sales Brochure?
-                </p>
-                <p className="text-white/50 text-[0.85em]">
-                  {savedOfferings.length} offering{savedOfferings.length !== 1 ? "s" : ""} saved — proceed to customise and generate your client-ready brochure.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
-                  {savedOfferings.map((o) => (
-                    <span key={o.id} className="text-[0.75em] px-2.5 py-1 bg-[#1450f5]/15 border border-[#1450f5]/25 text-[#7b9fff] rounded-full">
-                      {o.label}: {o.components.join(", ")}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <button
-                onClick={() => onBuildBrochure(savedOfferings)}
-                className="flex items-center gap-3 px-8 py-4 bg-[#1450f5] hover:bg-[#1040d0] text-white rounded-xl font-semibold text-[0.95em] transition-all active:scale-95 shadow-lg shadow-[#1450f5]/25 whitespace-nowrap"
-              >
-                Build Sales Brochure
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </motion.div>
-          )}
 
           {/* ── Footer ── */}
           <footer className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[0.75em] text-white/35 gap-6">
